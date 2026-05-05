@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>WeatherScope Pro — Live Forecast</title>
+  <link rel="stylesheet" href="style.css" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+</head>
+<body>
+
+  <!-- Stormy background with lightning, clouds and rain -->
+  <div class="storm-bg">
+    <div class="lightning"></div>
+
+    <!-- Layered SVG clouds -->
+    <div class="cloud-layer cloud-layer-1">
+      <svg class="cloud-svg" viewBox="0 0 900 220" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid slice">
+        <ellipse cx="160" cy="130" rx="130" ry="60" fill="rgba(180,210,240,0.07)"/>
+        <ellipse cx="230" cy="110" rx="100" ry="55" fill="rgba(180,210,240,0.06)"/>
+        <ellipse cx="110" cy="120" rx="80" ry="44" fill="rgba(180,210,240,0.05)"/>
+        <ellipse cx="520" cy="150" rx="160" ry="65" fill="rgba(160,200,235,0.07)"/>
+        <ellipse cx="610" cy="125" rx="120" ry="52" fill="rgba(160,200,235,0.06)"/>
+        <ellipse cx="460" cy="140" rx="90" ry="42" fill="rgba(160,200,235,0.05)"/>
+        <ellipse cx="820" cy="140" rx="110" ry="55" fill="rgba(170,205,238,0.07)"/>
+        <ellipse cx="880" cy="118" rx="80" ry="42" fill="rgba(170,205,238,0.05)"/>
+      </svg>
+    </div>
+
+    <div class="cloud-layer cloud-layer-2">
+      <svg class="cloud-svg" viewBox="0 0 900 180" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid slice">
+        <ellipse cx="80"  cy="100" rx="100" ry="48" fill="rgba(140,190,230,0.09)"/>
+        <ellipse cx="150" cy="82"  rx="85"  ry="42" fill="rgba(140,190,230,0.07)"/>
+        <ellipse cx="40"  cy="112" rx="60"  ry="32" fill="rgba(140,190,230,0.06)"/>
+        <ellipse cx="420" cy="120" rx="140" ry="58" fill="rgba(120,180,225,0.09)"/>
+        <ellipse cx="500" cy="98"  rx="110" ry="50" fill="rgba(120,180,225,0.07)"/>
+        <ellipse cx="360" cy="130" rx="85"  ry="38" fill="rgba(120,180,225,0.06)"/>
+        <ellipse cx="760" cy="115" rx="125" ry="54" fill="rgba(130,185,228,0.09)"/>
+        <ellipse cx="840" cy="94"  rx="95"  ry="44" fill="rgba(130,185,228,0.07)"/>
+      </svg>
+    </div>
+
+    <div class="cloud-layer cloud-layer-3">
+      <svg class="cloud-svg" viewBox="0 0 900 160" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid slice">
+        <ellipse cx="200" cy="90"  rx="150" ry="62" fill="rgba(100,165,215,0.11)"/>
+        <ellipse cx="295" cy="68"  rx="120" ry="55" fill="rgba(100,165,215,0.09)"/>
+        <ellipse cx="130" cy="105" rx="95"  ry="45" fill="rgba(100,165,215,0.08)"/>
+        <ellipse cx="600" cy="105" rx="155" ry="60" fill="rgba(90,158,210,0.11)"/>
+        <ellipse cx="700" cy="80"  rx="125" ry="54" fill="rgba(90,158,210,0.09)"/>
+        <ellipse cx="540" cy="115" rx="100" ry="44" fill="rgba(90,158,210,0.07)"/>
+      </svg>
+    </div>
+
+    <!-- Rain streaks -->
+    <div class="rain-container" id="rainContainer"></div>
+
+    <div class="clouds clouds-1"></div>
+    <div class="clouds clouds-2"></div>
+    <div class="overlay"></div>
+  </div>
+
+  <div class="app-wrapper">
+
+    <!-- Header -->
+    <header class="header">
+      <div class="header-left">
+        <div class="location-bar">
+          <svg class="location-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M12 1C7.04 1 3 5.04 3 10C3 14.5 12 23 12 23S21 14.5 21 10C21 5.04 16.96 1 12 1Z" stroke="currentColor" stroke-width="1.5" fill="none"/>
+            <circle cx="12" cy="10" r="2.5" stroke="currentColor" stroke-width="1.5"/>
+          </svg>
+          <span class="location-text" id="locationText">Search for a city...</span>
+          <svg class="nav-arrow" viewBox="0 0 24 24" fill="none">
+            <path d="M9 5L15 11L9 17" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+          </svg>
+        </div>
+      </div>
+      <div class="time-display">
+        <svg class="clock-icon" viewBox="0 0 24 24" fill="none">
+          <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="1.5"/>
+          <path d="M12 6V12L16 16" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+        </svg>
+        <span id="headerTime">06:00</span>
+      </div>
+    </header>
+
+    <!-- Search Section -->
+    <section class="search-section">
+      <div class="search-bar">
+        <input 
+          type="text" 
+          id="cityInput" 
+          class="search-input" 
+          placeholder="Enter city name..."
+          autocomplete="off"
+        />
+        <button class="search-btn" id="searchBtn">Search</button>
+      </div>
+      <div class="quick-cities">
+        <button class="city-chip" onclick="searchCity('Almaty')">Almaty</button>
+        <button class="city-chip" onclick="searchCity('Delhi')">Delhi</button>
+        <button class="city-chip" onclick="searchCity('Moscow')">Moscow</button>
+        <button class="city-chip" onclick="searchCity('London')">London</button>
+        <button class="city-chip" onclick="searchCity('Tokyo')">Tokyo</button>
+      </div>
+    </section>
+
+    <!-- Error message -->
+    <div class="error-msg" id="errorMsg"></div>
+
+    <!-- Loading spinner -->
+    <div class="loader" id="loader">
+      <div class="spinner"></div>
+      <p>Loading weather data...</p>
+    </div>
+
+    <!-- Main Weather Dashboard -->
+    <section class="weather-dashboard" id="weatherSection" style="display:none">
+      
+      <!-- Left Panel -->
+      <div class="dashboard-left">
+        
+        <!-- Date and Main Temp -->
+        <div class="main-display">
+          <div class="date-time">
+            <span id="dateDisplay" class="date-text">22 June, 22:16:10</span>
+          </div>
+          <div class="temp-display">
+            <span id="tempMain" class="main-temp">26°C</span>
+          </div>
+          <div class="weather-description" id="weatherDesc">Feels like 24°C. Scattered clouds. Light breeze</div>
+        </div>
+
+        <!-- Weather Cards Grid -->
+        <div class="cards-grid">
+          
+          <!-- Street/Outside Temp -->
+          <div class="weather-card">
+            <div class="card-label">
+              <svg class="card-icon" viewBox="0 0 24 24" fill="none">
+                <path d="M3 8C3 5.24 5.24 3 8 3C10.76 3 13 5.24 13 8V20H3V8Z" stroke="currentColor" stroke-width="1.5"/>
+                <path d="M13 8C13 5.24 15.24 3 18 3C20.76 3 23 5.24 23 8V20H13V8Z" stroke="currentColor" stroke-width="1.5"/>
+              </svg>
+              <span>Outdoor</span>
+            </div>
+            <span class="card-temp" id="streetTemp">24°C</span>
+            <div class="chart-mini" id="streetChart"></div>
+          </div>
+
+          <!-- Apartment/Indoor Temp -->
+          <div class="weather-card">
+            <div class="card-label">
+              <svg class="card-icon" viewBox="0 0 24 24" fill="none">
+                <rect x="2" y="4" width="20" height="16" rx="1" stroke="currentColor" stroke-width="1.5"/>
+                <path d="M2 8H22" stroke="currentColor" stroke-width="1.5"/>
+              </svg>
+              <span>Indoor</span>
+            </div>
+            <span class="card-temp" id="indoorTemp">30°C</span>
+            <div class="chart-mini" id="indoorChart"></div>
+          </div>
+
+        </div>
+
+        <!-- Sunrise/Sunset Section -->
+        <div class="sunrise-section">
+          <div class="rise-set-item">
+            <span class="rise-set-label">Time</span>
+            <span class="rise-set-time" id="riseSetTime">7:21:39</span>
+            <span class="rise-set-phase">until sunrise</span>
+          </div>
+          <div class="time-indicators">
+            <span class="indicator-time">4:32</span>
+            <span class="uv-value">
+              <svg viewBox="0 0 24 24" fill="none">
+                <circle cx="12" cy="12" r="8" stroke="currentColor" stroke-width="1.5"/>
+              </svg>
+              <span>5</span>
+            </span>
+            <span class="indicator-time">20:04</span>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Right Panel - Forecast & Details -->
+      <div class="dashboard-right">
+        
+        <!-- Air Quality & Metrics -->
+        <div class="metrics-section">
+          <div class="aqi-box">
+            <span class="aqi-label">AQI</span>
+            <span class="aqi-value" id="aqiValue">45</span>
+          </div>
+          <div class="metric-item">
+            <span class="metric-label">Wind</span>
+            <span class="metric-value" id="windValue">2.4 m/s</span>
+            <span class="metric-sub">Pressure</span>
+            <span class="metric-value" id="pressureValue">793 mmHg</span>
+          </div>
+          <div class="magnetic-item">
+            <span class="metric-label">Magnetic Field</span>
+            <span class="metric-value">G1</span>
+            <span class="metric-sub">Humidity</span>
+            <span class="metric-value" id="humidityValue">33 %</span>
+          </div>
+        </div>
+
+        <!-- Hourly Forecast -->
+        <div class="hourly-section">
+          <h3 class="section-title">Hourly Forecast</h3>
+          <div class="hourly-grid" id="hourlyGrid">
+            <!-- Filled by JavaScript -->
+          </div>
+        </div>
+
+        <!-- Weekly Forecast -->
+        <div class="weekly-section">
+          <h3 class="section-title">Weekly Forecast</h3>
+          <div class="weekly-list" id="weeklyList">
+            <!-- Filled by JavaScript -->
+          </div>
+        </div>
+
+      </div>
+
+    </section>
+
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
